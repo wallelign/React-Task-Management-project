@@ -1,10 +1,9 @@
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-export default function ExpenseForm() {
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("");
-  const [description, setDescription] = useState("");
+export default function AddVehicle() {
+  const [name, setName] = useState("");
+  const [status, setStatus] = useState("");
   const [date, setDate] = useState("");
 
   const [errorMessage, setErrorMessage] = useState(false);
@@ -15,15 +14,14 @@ export default function ExpenseForm() {
 
   const handleSubmit = async () => {
     const data = {
-      amount,
-      currency,
-      description,
+      name,
+      status,
       date,
     };
 
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:5000/api/expense", {
+      const response = await fetch("http://localhost:5000/api/vehicle", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -35,21 +33,20 @@ export default function ExpenseForm() {
         setLoading(false);
         setSuccessMessage(true);
         setErrorMessage(false);
-        console.log("expense data submitted successfully");
+        console.log("Vehicle data submitted successfully");
 
-        // Redirect to home page after 2 seconds
         setTimeout(() => {
-          navigate("/expenses");
+          navigate("/");
         }, 2000);
       } else {
         setSuccessMessage(false);
         setErrorMessage(true);
-        console.error("Failed to submit expense data");
+        console.error("Failed to submit Vehicle data");
       }
     } catch (error) {
       setSuccessMessage(false);
       setErrorMessage(true);
-      console.error("Error submitting expense data:", error);
+      console.error("Error submitting Vehicle data:", error);
     }
   };
 
@@ -59,58 +56,43 @@ export default function ExpenseForm() {
         <div className="mb-4">
           <label
             className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="amount"
+            htmlFor="name"
           >
-            Amount
+            Name
           </label>
           <input
             className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            name="amount"
-            type="number"
-            placeholder="amount"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
+            name="name"
+            type="text"
+            placeholder="name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
 
         <div className="max-w-sm mx-auto py-2">
           <label
-            htmlFor="countries"
+            htmlFor="status"
             className="block mb-2 text-sm font-medium text-gray-900 dark:text-white"
           >
-            Select currency
+            Select Status
           </label>
           <select
-            id="countries"
+            id="status"
             className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-            onChange={(e) => setCurrency(e.target.value)}
-            name="currency"
-            value={currency}
+            onChange={(e) => setStatus(e.target.value)}
+            name="status"
+            value={status}
             required
           >
             <option value="" disabled>
-              Select Currency
+              Select status
             </option>
-            <option value="ETB">ETB</option>
-            <option value="USD">USD</option>
+            <option value="reserved">Reserved</option>
+            <option value="new">New</option>
+            <option value="active">Active</option>
+            <option value="inactive">InActive</option>
           </select>
-        </div>
-
-        <div className="mb-4">
-          <label
-            className="block text-gray-700 text-sm font-bold mb-2"
-            htmlFor="description"
-          >
-            Description
-          </label>
-          <input
-            className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline"
-            name="description"
-            type="text"
-            placeholder="Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-          />
         </div>
 
         <div className="mb-4">
@@ -141,7 +123,7 @@ export default function ExpenseForm() {
         </div>
         <div className="px-6 pt-3">
           <span className="text-yellow-600">
-            {successMessage && "You have successfully saved expense!"}
+            {successMessage && "You have successfully saved Vehicle!"}
           </span>
           <span className="text-red-600">{errorMessage && "Error!"}</span>
         </div>

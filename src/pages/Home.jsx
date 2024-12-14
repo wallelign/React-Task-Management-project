@@ -1,11 +1,10 @@
-import React from 'react'
-import IncomeList from '../components/IncomeList'
+import React from "react";
+import VehicleList from "../components/VehicleList";
 
 export default function Home() {
   return (
     <div>
-      
-      <IncomeList/> 
+      <VehicleList />
     </div>
-  )
+  );
 }

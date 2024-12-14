@@ -1,81 +1,49 @@
 import React, { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 
-function AllExpense() {
+function VehicleList() {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 5;
   const [searchTerm, setSearchTerm] = useState("");
 
-  // Fetch current month's expense data
-  const fetchExpenseData = async () => {
-    const response = await fetch("http://localhost:5000/api/expense");
+  // Fetch current month's Vehicle data
+  const fetchVehicleData = async () => {
+    const response = await fetch("http://localhost:5000/api/vehicle");
     if (!response.ok) {
-      throw new Error("Failed to fetch expense data");
+      throw new Error("Failed to fetch Vehicle data");
     }
     return response.json();
   };
+
   const {
-    data: expenses = [],
+    data: Vehicles = [],
     error,
     isLoading,
-    refetch,
   } = useQuery({
-    queryKey: ["expenseData"],
-    queryFn: fetchExpenseData,
+    queryKey: ["VehicleData"],
+    queryFn: fetchVehicleData,
   });
 
-  const { data: yearlyExpenses = [] } = useQuery({
-    queryKey: ["yearlyExpenseData"],
-    // queryFn: fetchYearlyExpenseData,
-  });
-
-  const filteredExpenses = expenses.filter((expense) => {
-    const source = expense.source || "";
-    const description = expense.description || "";
+  const filteredVehicles = Vehicles.filter((Vehicle) => {
+    const status = Vehicle.status || "";
+    const name = Vehicle.name || "";
     return (
-      source.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      description.toLowerCase().includes(searchTerm.toLowerCase())
+      status.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      name.toLowerCase().includes(searchTerm.toLowerCase())
     );
   });
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filteredExpenses.slice(
+  const currentItems = filteredVehicles.slice(
     indexOfFirstItem,
     indexOfLastItem
   );
-  const totalPages = Math.ceil(filteredExpenses.length / itemsPerPage);
-
-  const totalExpense = filteredExpenses.reduce(
-    (acc, item) => {
-      if (item.currency === "ETB") {
-        acc.etb += item.amount;
-      } else if (item.currency === "USD") {
-        acc.usd += item.amount;
-      }
-      return acc;
-    },
-    { etb: 0, usd: 0 }
-  );
-
-  // Calculate yearly total by currency
-  const yearlyTotal = yearlyExpenses.reduce(
-    (acc, item) => {
-      if (item.currency === "ETB") {
-        acc.etb += item.amount;
-      } else if (item.currency === "USD") {
-        acc.usd += item.amount;
-      }
-      return acc;
-    },
-    { etb: 0, usd: 0 }
-  );
+  const totalPages = Math.ceil(filteredVehicles.length / itemsPerPage);
 
   return (
     <>
-      <h1 className="font-sans font-semibold text-xl ml-6 mt-2">
-        Current Month expenses
-      </h1>
+      <h1 className="font-sans font-semibold text-xl ml-6 mt-2">Vehicles</h1>
       <div className="flex justify-between items-center mt-4 mx-4">
         <input
           type="text"
@@ -86,10 +54,10 @@ function AllExpense() {
         />
         <div>
           <a
-            href="expenses/add"
+            href="vehicle/add"
             className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded "
           >
-            Add expense
+            Add Vehicle
           </a>
         </div>
       </div>
@@ -104,36 +72,38 @@ function AllExpense() {
             <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-400">
               <tr>
                 <th scope="col" className="px-6 py-3">
-                  Date
+                  Created Date
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Amount
+                  Name
                 </th>
                 <th scope="col" className="px-6 py-3">
-                  Currency
+                  Status
                 </th>
-
                 <th scope="col" className="px-6 py-3">
-                  Description
+                  Updated Date
                 </th>
               </tr>
             </thead>
             <tbody>
-              {currentItems.map((expense) => (
+              {currentItems.map((Vehicle) => (
                 <tr
-                  key={expense._id}
+                  key={Vehicle._id}
                   className="bg-white border-b dark:bg-gray-800 dark:border-gray-700"
                 >
                   <th
                     scope="row"
                     className="px-6 py-4 font-medium text-gray-900 whitespace-nowrap dark:text-white"
                   >
-                    {expense.date &&
-                      new Date(expense.date).toLocaleDateString()}
+                    {Vehicle.date &&
+                      new Date(Vehicle.date).toLocaleDateString()}
                   </th>
-                  <td className="px-6 py-4">{expense.amount}</td>
-                  <td className="px-6 py-4">{expense.currency}</td>
-                  <td className="px-6 py-4">{expense.description}</td>
+                  <td className="px-6 py-4">{Vehicle.name}</td>
+                  <td className="px-6 py-4">{Vehicle.status}</td>
+                  <td className="px-6 py-4">
+                    {Vehicle.updatedAt &&
+                      new Date(Vehicle.updatedAt).toLocaleDateString()}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -162,13 +132,8 @@ function AllExpense() {
           </div>
         </div>
       )}
-
-      <div className="flex justify-end text-base font-serif font-bold mt-5 underline px-2 py-1">
-        Total expense: {totalExpense.etb} ETB{" "}
-        {totalExpense.usd && ` | ${totalExpense.usd} USD`}
-      </div>
     </>
   );
 }
 
-export default AllExpense;
+export default VehicleList;
